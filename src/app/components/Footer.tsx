@@ -7,7 +7,7 @@ export default function Footer() {
         {Array.from(Array(5)).map((_: any, index: any) => {
           return (
             <div key={index} className="w-[100%]">
-              <h1 className=" h-[92px]  bg-red-500 font-bold text-2xl mt-20 items-center flex text-center text-wrap text-white  ">
+              <h1 className=" h-[92px] justify-end  bg-red-500 font-bold text-2xl mt-20 items-center flex text-center text-wrap text-white  ">
                 fresh fast delivered
               </h1>
             </div>
