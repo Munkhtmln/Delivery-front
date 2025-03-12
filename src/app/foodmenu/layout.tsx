@@ -1,7 +1,7 @@
 const Sidebar = () => {
   return (
     <div className="w-[205px] h-[100vh] bg-white">
-      <img src="./Logo=Horizon.svg" alt="" />
+      <img src="./Logo=Horizon.svg" alt="" className="text-black" />
     </div>
   );
 };
