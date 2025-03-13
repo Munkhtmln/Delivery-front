@@ -24,6 +24,17 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { Divide } from "lucide-react";
 import { Category } from "@/types";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   categoryName: z.string().min(2, {
@@ -33,6 +44,7 @@ const formSchema = z.object({
 
 export default function ProfileForm() {
   const [categories, setCategories] = useState([]);
+  const [editCategoryValue, setEditCategoryValue] = useState("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -61,13 +73,14 @@ export default function ProfileForm() {
 
     getNewCategory();
   };
-  const editCategory = async (cate: string) => {
-    const data = await fetch("http://localhost:4000/food-category", {
-      method: "POST",
+  const editCategory = async (id: string) => {
+    console.log(editCategoryValue);
+    const data = await fetch(`http://localhost:4000/food-category/${id}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ categoryName: cate }),
+      body: JSON.stringify({ categoryName: editCategoryValue }),
     });
 
     getNewCategory();
@@ -84,49 +97,103 @@ export default function ProfileForm() {
     createCategory(values.categoryName);
   }
 
+  const handleChange = (e: any) => {
+    const { value } = e.target;
+    setEditCategoryValue(value);
+  };
+
   return (
-    <div>
-      <div>
+    <div className="w-[80%] m-auto mt-10 ">
+      <div className="">
         <div></div>
-        <div>
+        <div className="flex gap-4 m-auto bg-white w-[100%] items-center justify-center h-[170px] ">
           {categories?.map((category: Category, index: number) => {
             return (
-              <ContextMenu>
-                <ContextMenuTrigger>
-                  <div key={index}>{category.categoryName}</div>
-                </ContextMenuTrigger>
-                <ContextMenuContent>
-                  <ContextMenuItem>Edit</ContextMenuItem>
-                  <ContextMenuItem
-                    onClick={() => {
-                      deleteCategory(category._id);
-                    }}
-                  >
-                    Delete
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
+              <div key={index} className="">
+                <Dialog>
+                  <ContextMenu>
+                    <ContextMenuTrigger>
+                      <div className="border-[1px] rounded-full ">
+                        {category.categoryName}
+                      </div>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent>
+                      <DialogTrigger asChild>
+                        <ContextMenuItem>Edit</ContextMenuItem>
+                      </DialogTrigger>
+
+                      <ContextMenuItem
+                        onClick={() => {
+                          deleteCategory(category._id);
+                        }}
+                      >
+                        Delete
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Edit Category Name</DialogTitle>
+                      <DialogDescription>
+                        Make changes to your category name here. Click save when
+                        you're done.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">
+                          Name
+                        </Label>
+                        <Input
+                          placeholder={editCategoryValue}
+                          onChange={handleChange}
+                          id="name"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4"></div>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        onClick={() => {
+                          editCategory(category._id);
+                        }}
+                        type="submit"
+                      >
+                        Save changes
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
             );
           })}
-          <div className="bg-red-700">
-            <button>+</button>
-          </div>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="categoryName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="shadcn" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button type="submit">Submit</Button>
-            </form>
-          </Form>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="bg-red-600">+</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-8"
+                >
+                  <FormField
+                    control={form.control}
+                    name="categoryName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="shadcn" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit">Submit</Button>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
