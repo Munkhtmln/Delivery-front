@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import Link from "next/link";
 
 const Sidebar = () => {
   return (
@@ -18,13 +19,15 @@ const Sidebar = () => {
         variant="outline"
         className="flex-col gap-4 mt-8 justify-center items-center pr-2"
       >
-        <ToggleGroupItem
-          className="data-[state=on]:bg-black w-[165px] h-[40px] data-[state=on]:text-white rounded-full border-none"
-          value="bold"
-        >
-          <LayoutDashboardIcon />
-          Foodmenu
-        </ToggleGroupItem>
+        <Link href={"/foodmenu"}>
+          <ToggleGroupItem
+            className="data-[state=on]:bg-black w-[165px] h-[40px] data-[state=on]:text-white rounded-full border-none"
+            value="bold"
+          >
+            <LayoutDashboardIcon />
+            Foodmenu
+          </ToggleGroupItem>
+        </Link>
         <ToggleGroupItem
           className="data-[state=on]:bg-black  w-[165px] h-[40px] data-[state=on]:text-white border-none"
           value="italic"
