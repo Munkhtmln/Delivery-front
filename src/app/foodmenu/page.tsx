@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { Divide } from "lucide-react";
 import { Category } from "@/types";
+
 import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import {
   Dialog,
@@ -35,6 +36,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import AddDish from "../components/Adddish";
 
 const formSchema = z.object({
   categoryName: z.string().min(2, {
@@ -45,6 +47,7 @@ const formSchema = z.object({
 export default function ProfileForm() {
   const [categories, setCategories] = useState([]);
   const [editCategoryValue, setEditCategoryValue] = useState("");
+  const [close, setClose] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -95,6 +98,7 @@ export default function ProfileForm() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     createCategory(values.categoryName);
+    setClose(false);
   }
 
   const handleChange = (e: any) => {
@@ -106,128 +110,102 @@ export default function ProfileForm() {
     <div className="w-[80%] m-auto mt-10 ">
       <div className="">
         <div></div>
-        <div className="flex gap-4 m-auto bg-white w-[100%] items-center justify-center h-[170px] ">
-          {categories?.map((category: Category, index: number) => {
-            return (
-              <div key={index} className="">
-                <Dialog>
-                  <ContextMenu>
-                    <ContextMenuTrigger>
-                      <div className="border-[1px] rounded-full ">
-                        {category.categoryName}
-                      </div>
-                    </ContextMenuTrigger>
-                    <ContextMenuContent>
-                      <DialogTrigger asChild>
-                        <ContextMenuItem>Edit</ContextMenuItem>
-                      </DialogTrigger>
+        <div className="flex flex-col gap-4 m-auto bg-white w-[100%] p-6 h-[170px] ">
+          <p className="text-xl font-bold">Dishes Categories</p>
+          <div className="flex items-center justify-start gap-4">
+            {categories?.map((category: Category, index: number) => {
+              return (
+                <div key={index} className="">
+                  <Dialog open={close} onOpenChange={setClose}>
+                    <ContextMenu>
+                      <ContextMenuTrigger>
+                        <div className="border-[1px] rounded-full px-2">
+                          {category.categoryName}
+                        </div>
+                      </ContextMenuTrigger>
+                      <ContextMenuContent>
+                        <DialogTrigger asChild>
+                          <ContextMenuItem>Edit</ContextMenuItem>
+                        </DialogTrigger>
 
-                      <ContextMenuItem
-                        onClick={() => {
-                          deleteCategory(category._id);
-                        }}
-                      >
-                        Delete
-                      </ContextMenuItem>
-                    </ContextMenuContent>
-                  </ContextMenu>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle asChild>Edit Category Name</DialogTitle>
-                      <DialogDescription>
-                        Make changes to your category name here. Click save when
-                        you're done.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="name" className="text-right">
-                          Name
-                        </Label>
-                        <Input
-                          placeholder={editCategoryValue}
-                          onChange={handleChange}
-                          id="name"
-                          className="col-span-3"
-                        />
+                        <ContextMenuItem
+                          onClick={() => {
+                            deleteCategory(category._id);
+                          }}
+                        >
+                          Delete
+                        </ContextMenuItem>
+                      </ContextMenuContent>
+                    </ContextMenu>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle asChild>Edit Category Name</DialogTitle>
+                        <DialogDescription>
+                          Make changes to your category name here. Click save
+                          when you're done.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="name" className="text-right">
+                            Name
+                          </Label>
+                          <Input
+                            placeholder={editCategoryValue}
+                            onChange={handleChange}
+                            id="name"
+                            className="col-span-3"
+                          />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4"></div>
                       </div>
-                      <div className="grid grid-cols-4 items-center gap-4"></div>
-                    </div>
-                    <DialogFooter>
-                      <Button
-                        onClick={() => {
-                          editCategory(category._id);
-                        }}
-                        type="submit"
-                      >
-                        Save changes
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            );
-          })}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="bg-red-600">+</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-8"
-                >
-                  <FormField
-                    control={form.control}
-                    name="categoryName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input placeholder="shadcn" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit">Submit</Button>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
+                      <DialogFooter>
+                        <Button
+                          onClick={() => {
+                            editCategory(category._id);
+                          }}
+                          type="submit"
+                        >
+                          Save changes
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              );
+            })}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="bg-red-600">+</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-8"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="categoryName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="shadcn" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit">Submit</Button>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       </div>
-      <div className="bg-white w-[100%] mt-10">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline">Edit Profile</Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Edit profile</DialogTitle>
-              <DialogDescription>
-                Make changes to your profile here. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Name
-                </Label>
-                <Input id="name" value="Pedro Duarte" className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username" className="text-right">
-                  Username
-                </Label>
-                <Input id="username" value="@peduarte" className="col-span-3" />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">Save changes</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
+      <AddDish />
+      <AddDish />
+      <AddDish />
     </div>
   );
 }
